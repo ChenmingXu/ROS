@@ -17,12 +17,25 @@ class Rotator():
             rospy.loginfo("Rotating robot: %s", self.twist)
             r.sleep()
 
+class Move():
+    def __init__(self):
+        self._cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
 
+    def move_forever(self):
+        self.twist = Twist()
+
+        r = rospy.Rate(10)
+        while not rospy.is_shutdown():
+            self.twist.linear.x = 0.5
+            self._cmd_pub.publish(self.twist)
+            rospy.loginfo("Moving robot: %s", self.twist)
+            r.sleep()
+            
 def main():
     rospy.init_node('rotate')
     try:
-        rotator = Rotator()
-        rotator.rotate_forever()
+        mover = Move()
+        mover.move_forever()
     except rospy.ROSInterruptException:
         pass
 
